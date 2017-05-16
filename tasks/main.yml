@@ -17,6 +17,6 @@
 ---
 - name: Upload latest components if available
   include: refreshpuddles.yml
-    with_items: '{{ components }}'
-    loop_control:
-      loop_var: component_to_upload
+  with_items: '{{ components }}'
+  loop_control:
+    loop_var: component_to_upload
