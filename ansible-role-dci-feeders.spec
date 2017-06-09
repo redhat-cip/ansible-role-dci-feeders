@@ -8,8 +8,10 @@ Source0:    ansible-role-dci-feeders-%{version}.tar.gz
 
 BuildArch:  noarch
 Requires:   ansible
+Requires:   createrepo
 Requires:   dci-ansible
 Requires:   python2-dciclient
+Requires:   yum-utils
 
 %description
 An Ansible role that deploys the necessary playbook for a host to act as a DCI feeder
