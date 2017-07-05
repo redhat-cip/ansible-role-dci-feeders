@@ -1,0 +1,49 @@
+---
+- name: Create topic (if necessary)
+  dci_topic:
+    name: '{{ component_to_upload.topic }}'
+  register: topic
+
+- name: Retrieve component informations
+  uri:
+    url: '{{ component_to_upload.url }}'
+    return_content: yes
+  register: component
+
+- name: Create component (if necessary)
+  dci_component:
+    name: '{{ component_to_upload.name }} {{ component.json.commit.commit.author.date[0:10] }} {{ component.json.commit.sha[0:7] }}'
+    type: '{{ component_to_upload.type }}'
+    canonical_project_name: '{{ component_to_upload.name }}'
+    url: 'https://api.github.com/repos/ansible/ansible/tarball/{{ component.json.commit.sha }}'
+    topic_id: '{{ topic.topic.id }}'
+  register: create
+
+- block:
+  - name: Retrieve git repo
+    git:
+      repo: https://github.com/ansible/ansible
+      dest: '{{ lookup("env", "PWD") }}/ansible'
+      version: '{{ component.json.commit.sha }}'
+
+  - name: Archive the git repo
+    archive:
+      path: '{{ lookup("env", "PWD") }}/ansible'
+      dest: '{{ lookup("env", "PWD") }}/ansible.tar.gz'
+
+  - name: Upload the component to the DCI control-server
+    dci_component:
+      id: '{{ create.component.id }}'
+      path: '{{ lookup("env", "PWD") }}/ansible.tar.gz'
+
+  - name: Clean up
+    file:
+      state: absent
+      path: '{{ lookup("env", "PWD") }}/ansible'
+
+  - name: Clean up
+    file:
+      state: absent
+      path: '{{ lookup("env", "PWD") }}/ansible.tar.gz'
+
+  when: create.changed
