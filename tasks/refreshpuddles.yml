@@ -26,6 +26,7 @@
 - name: Create topic (if necessary)
   dci_topic:
     name: '{{ component_to_upload.topic }}'
+    component_types: '{{ component_to_upload.component_types }}'
   register: topic
 
 
