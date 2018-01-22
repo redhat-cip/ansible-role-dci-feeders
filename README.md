@@ -1,5 +1,7 @@
 # ansible-role-dci-feeders
 
+DO NOT MERGE
+
 An Ansible role that deploys the necessary playbook for a host to act as a DCI feeder
 
 
